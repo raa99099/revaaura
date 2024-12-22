@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+typedef struct {
+    int HH;
+    int MM;
+    int SS;
+} jam;
+
+// Fungsi untuk mereset jam
+void ResetJam(jam *J) {
+    (*J).HH = 0;
+    (*J).MM = 0;
+    (*J).SS = 0;
+}
+
+// Fungsi untuk menampilkan jam
+void TulisJam(jam J) {
+    printf("Jam : %02d:%02d:%02d\n", J.HH, J.MM, J.SS);
+}
+
+// Fungsi untuk mengkonversi jam ke detik
+int JamToDetik(jam J) {
+    return (J.HH * 3600 + J.MM * 60 + J.SS);
+}
+
+// Fungsi untuk mengkonversi detik ke jam
+jam DetikToJam(int d) {
+    jam J;
+    int sisa;
+
+    J.HH = d / 3600;
+    sisa = d % 3600;
+    J.MM = sisa / 60;
+    J.SS = sisa % 60;
+
+    return J;
+}
+
+// Fungsi untuk menyimpan data jam ke file CSV
+void SimpanKeCSV(jam J, const char *namaFile) {
+    FILE *fp = fopen(namaFile, "w");
+    if (fp == NULL) {
+        printf("Error membuka file %s!\n", namaFile);
+        return;
+    }
+
+    fprintf(fp, "Jam,Menit,Detik\n");
+    fprintf(fp, "%d,%d,%d\n", J.HH, J.MM, J.SS);
+    fclose(fp);
+
+    printf("Data jam berhasil disimpan ke %s.\n", namaFile);
+}
+
+int main() {
+    jam J1, J2;
+    int detik;
+
+    // Input data jam
+    printf("Masukkan jam (HH:MM:SS): ");
+    scanf("%d:%d:%d", &J1.HH, &J1.MM, &J1.SS);
+
+    // Proses
+    ResetJam(&J2);
+    detik = JamToDetik(J1);
+    J2 = DetikToJam(detik);
+
+    // Output
+    printf("\nJam 1: ");
+    TulisJam(J1);
+    printf("Jam 2: ");
+    TulisJam(J2);
+    printf("Jam 1 dalam detik: %d\n", detik);
+
+    // Menyimpan data ke file CSV
+    SimpanKeCSV(J1, "data_jam.csv");
+
+    return 0;
+}
